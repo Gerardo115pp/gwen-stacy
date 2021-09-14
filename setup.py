@@ -9,7 +9,7 @@ setup(
     maintainer="Gerardo Rodriguez Sanchez",
     maintainer_email="gerardo.rodriguez@liberylabs.com",\
     install_requires=["pyyaml", "click"],
-    license="GPL-2.0-only",
+    license="GPL-2.1-only",
     packages=find_packages(
         where="src" 
     ),
