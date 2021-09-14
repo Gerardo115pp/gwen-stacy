@@ -1,9 +1,28 @@
-from src.default_config import  CONFIG_FILE
+from .default_config import *
+from typing import Dict, List
 import click, yaml
 
 @click.group()
 def config():
     pass
+
+def createDefaultConfig() -> Dict[str, str]:
+    patriots_lib_path = LIBS_DIR
+    patriots_templates_path = TEMPLATES_DIR
+    
+    os.mkdir(PATRIOTS_LINKER_SRC)
+    os.mkdir(patriots_lib_path)
+    os.mkdir(patriots_templates_path)
+    
+    patriots_config = {
+            "src": PATRIOTS_LINKER_SRC,
+            'libs': patriots_lib_path,
+            'templates': patriots_templates_path
+        }
+    print("First run detected. Creating config file...")
+    
+    with open(CONFIG_FILE, 'w') as f:
+        yaml.dump(patriots_config, f)
 
 def saveConfig(config):
     pass
