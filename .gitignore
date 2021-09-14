@@ -1,0 +1,4 @@
+/**/__pycache__
+*.pyc
+patriot_linker.egg-info/
+src/__pycache__/main.cpython-39.pyc

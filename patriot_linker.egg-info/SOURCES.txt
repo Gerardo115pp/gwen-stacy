@@ -1,8 +1,0 @@
-pyproject.toml
-setup.py
-patriot_linker.egg-info/PKG-INFO
-patriot_linker.egg-info/SOURCES.txt
-patriot_linker.egg-info/dependency_links.txt
-patriot_linker.egg-info/entry_points.txt
-patriot_linker.egg-info/requires.txt
-patriot_linker.egg-info/top_level.txt

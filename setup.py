@@ -10,11 +10,9 @@ setup(
     maintainer_email="gerardo.rodriguez@liberylabs.com",\
     install_requires=["pyyaml", "click"],
     license="GPL-2.1-only",
-    packages=find_packages(
-        where="src" 
-    ),
+    packages=find_packages(),
     entry_points='''
     [console_scripts]
-    patriotl=src.main:cli
+    patriotsl=src.main:cli
     '''
 )
