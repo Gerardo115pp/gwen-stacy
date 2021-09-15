@@ -1,7 +1,7 @@
 from .configuration_manager.config import config, createDefaultConfig
 from .configuration_manager.default_config import *
 from .repositorys.repositorys import repos
-from .modules_manager.modules_manager import mds
+from .modules_manager.modules_manager import modules
 import click, yaml
 import os
 
@@ -32,4 +32,4 @@ def cli(context):
     
 cli.add_command(config)
 cli.add_command(repos)
-cli.add_command(mds)
+cli.add_command(modules)
