@@ -35,7 +35,20 @@ class Repository:
         self.exists = True
         os.mkdir(self.base_path)
         self.saveToYaml()
-                
+    
+    def display(self, full:bool = False):
+        print(f"{self.name}:")
+        print (f"\tDescription: \n\t\t{self.description}")
+        print(f"\tModules:")
+        for mod in self._getModules():
+            print(f"\t\t{mod:>10}", end="")
+            if full:
+                mod_obj = self.getModule(mod)
+                print(f"\t-\t{mod_obj.description}")
+            print()
+        
+            
+    
     @property
     def DataFile(self) -> str:
         return os.path.join(self.base_path, Repository.repo_data_file)
@@ -51,6 +64,7 @@ class Repository:
         for mod in os.scandir(self.base_path):
             if mod.is_dir():
                 modules.append(PatriotModule(mod.name, "", []))
+        return modules
 
     def hasModule(self, module_name: str) -> bool:
             return os.path.exists(os.path.join(self.base_path, module_name))

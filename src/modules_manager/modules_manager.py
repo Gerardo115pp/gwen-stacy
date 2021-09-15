@@ -1,6 +1,7 @@
+from src.repositorys import Repository
 from src.repositorys.repositorys import getRepositorys
-from typing import List
-import click, os
+from typing import List, Dict
+import click, os, json
 
 @click.group()
 @click.pass_context
@@ -58,4 +59,18 @@ def linkModule(context:click.Context, repo:str, module:str, files:str):
             click.secho("Repository not found", fg="red")
     else:
         click.secho("thats odd, you should neve see this unless mds callback wasnt triggered", fg="red")
-    
+
+@modules.command("list")
+@click.option("-r","--repo", default="", help="Repository to list", required=False)
+@click.option("-l", "--long", default=False, is_flag=True, help="Long list, includes description")
+@click.pass_context
+def listModules(context:click.Context, repo:str, long:bool):
+    """
+    List modules from a repository
+    """
+    if repo == "":
+        # list all repos
+        for repo in context.obj["repos"].values():
+            repo:Repository
+            repo.display(long)
+            
