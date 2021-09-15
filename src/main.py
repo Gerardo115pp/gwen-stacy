@@ -2,6 +2,7 @@ from .configuration_manager.config import config, createDefaultConfig
 from .configuration_manager.default_config import *
 from .repositorys.repositorys import repos
 from .modules_manager.modules_manager import modules
+from .templates.templates_cli import templates
 import click, yaml
 import os
 
@@ -33,3 +34,4 @@ def cli(context):
 cli.add_command(config)
 cli.add_command(repos)
 cli.add_command(modules)
+cli.add_command(templates)

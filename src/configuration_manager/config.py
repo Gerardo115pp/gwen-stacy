@@ -34,8 +34,8 @@ def saveConfig(config):
 @click.option('-v' ,'--value', default=None, required=True, type=str, help="the new configuration value")
 @click.pass_context
 def setConfig(context, entry, value):
-    context.obj['config'][entry] = value
-    saveConfig(context.obj['config'])
+    print("changeing configurations is now deprecated")
+    
     
 @config.command("show")
 @click.pass_context
