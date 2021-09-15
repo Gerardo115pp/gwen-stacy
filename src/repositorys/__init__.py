@@ -1,4 +1,5 @@
 from src.configuration_manager.default_config import PATRIOTS_LINKER_SRC
+from src.modules_manager import PatriotModule, loadModuleFromYaml
 from typing import List, Dict, Tuple
 import os, yaml
 
@@ -32,40 +33,39 @@ class Repository:
         
         self.exists = True
         os.mkdir(self.base_path)
-        self.__addDataFile()
-
-    def __addDataFile(self):
-        data_file = {
-            "repo_data": {
-                "name": self.name,
-                "description": self.description,
-                "count": 0
-            }   
-        }
-        
-        if self.exists:
-            with open(self.DataFile, "w") as f:
-                yaml.dump(data_file, f)
+        self.saveToYaml()
                 
-
     @property
     def DataFile(self) -> str:
         return os.path.join(self.base_path, Repository.repo_data_file)
 
+    def getModule(self, module_name:str) -> PatriotModule:
+        for mod in os.scandir(self.base_path):
+            if mod.is_dir() and mod.name == module_name:
+                return loadModuleFromYaml(mod.name, self.base_path)
+        return None
+    
+    def getModules(self) -> List[PatriotModule]:
+        modules = []
+        for mod in os.scandir(self.base_path):
+            if mod.is_dir():
+                modules.append(PatriotModule(mod.name, "", []))
+
+    def hasModule(self, module_name: str) -> bool:
+            return os.path.exists(os.path.join(self.base_path, module_name))
+
     def load(self, module_name:str, desc:str, files: Tuple[str]):
-        module_data = {
-            "name": module_name,
-            "description": desc,
-        }
+        new_module = PatriotModule(module_name, desc, files)
         module_path = os.path.join(self.base_path, module_name)
+        new_module.setBaseDir(module_path)
+        
         
         if not os.path.exists(module_path):
             # Create module directory
             os.mkdir(module_path)
             
-            # Create module data file
-            with open(os.path.join(module_path, "data.yaml"), "w") as f:
-                yaml.dump(module_data, f, version="3.8")
+        # Create module data file
+        new_module.generateYaml()
         
         
         # Move files to module directory and create links to them
@@ -77,6 +77,8 @@ class Repository:
                 os.symlink( new_file, os.path.abspath(f"./{f}"))
             print("linked")
         
+        self.count += 1
+        self.saveToYaml()
         print(f"{module_name} created")
         
         
@@ -98,6 +100,22 @@ class Repository:
         
     def _getModules(self) -> List[str]:
         return [ mod.name for mod in os.scandir(self.base_path) if mod.is_dir()]
+    
+    def saveToYaml(self):
+        if not self.exists:
+            print("Repository does not exist")
+            return
+        
+        data_file = {
+            "repo_data": {
+                "name": self.name,
+                "description": self.description,
+                "count": self.count
+            }   
+        }
+        
+        with open(self.DataFile, "w") as f:
+            yaml.dump(data_file, f)
     
 # recives a path for the repository base dire and returns a list of all the repositorys found
 def getRepositorys(repository_path: str) -> Dict[str,Repository]:
