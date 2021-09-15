@@ -4,13 +4,13 @@ import click, os
 
 @click.group()
 @click.pass_context
-def mds(context):
+def modules(context):
     """
     Manage modules
     """
     context.obj["repos"] = getRepositorys(context.obj["config"]['libs'])
 
-@mds.command("load")
+@modules.command("load")
 @click.option("-m","--module", help="Module to load", required=False)
 @click.argument("repo", nargs=1, required=True)
 @click.argument("files_list", nargs=-1, required=True, expose_value=True)
@@ -34,7 +34,7 @@ def loadModule(context: click.Context, module:str, repo:str, files_list: List[st
     Recives a repo name and a module name and creates a symbolic link to the module. 
     Opcionaly, it can recive a --files flag to specify the files to be symlinked.
 '''
-@mds.command("link")
+@modules.command("link")
 @click.option("-f", "--files", default=None, type=str,help="Specify files to be symlinked, separate them by a coma")
 @click.argument("repo", nargs=1, required=True)
 @click.argument("module", nargs=1, required=True)

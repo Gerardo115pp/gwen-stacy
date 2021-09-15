@@ -1,5 +1,5 @@
 
-from typing import Tuple, List
+from typing import Dict, Tuple, List
 import yaml, os
 
 
@@ -9,6 +9,7 @@ import yaml, os
 '''
 class PatriotModule:
     MOD_DATA_FILE = '.mod.yml'
+    DEPENDANTS_FILE = '.dependants.yml'
     
     def __init__(self, name:str, description:str, files:Tuple[str]) -> None:
         self.name:str = name
@@ -37,6 +38,9 @@ class PatriotModule:
         for f in files:
             os.symlink(f'{self.base_dir}/{f}', f'{os.getcwd()}/{f}')
             print(f'linked {f}')
+        
+        # DEPENDANTS UPDATE: add current working directory to dependants file
+        self.updateDependants(os.getcwd())
             
     def setBaseDir(self, base_dir:str) -> None:
         ''''''
@@ -45,6 +49,39 @@ class PatriotModule:
         
         self.base_dir = base_dir
 
+    def updateDependants(self, dependant:str) -> None:
+        """
+        adds dependant to DEPEANDANTS_FILE, if it exists. if not the it will created.
+
+        Parameters
+        ----------
+        dependant : str
+            is the path where the module is been used
+        """
+        dependant_file_content:Dict = None
+        
+        if not os.path.exists(f'{self.base_dir}/{PatriotModule.DEPENDANTS_FILE}'):
+            # create dependants file
+            print(f'no dependants file was found. creating...')
+            os.mknod(f'{self.base_dir}/{PatriotModule.DEPENDANTS_FILE}')
+            dependant_file_content = {'dependants': [dependant]}
+        else:
+            with open(f'{self.base_dir}/{PatriotModule.DEPENDANTS_FILE}', 'r') as f:
+                dependant_file_content = yaml.load(f)
+                
+            # check if dependant is already in dependants file
+            if dependant not in dependant_file_content['dependants']:
+                dependant_file_content['dependants'].append(dependant)
+    
+        print(f'{len(dependant_file_content["dependants"])} depentants for module {self.name}')
+        
+        # save dependants file
+        with open(f'{self.base_dir}/{PatriotModule.DEPENDANTS_FILE}', 'w') as f:
+            yaml.dump(dependant_file_content, f)
+        print(f'updated dependants file')
+        
+
+        
 def loadModuleFromYaml(mod:str, repo_path:str) -> PatriotModule:
     module_yaml_path = f"{repo_path}/{mod}/{PatriotModule.MOD_DATA_FILE}"
     if os.path.exists(module_yaml_path):

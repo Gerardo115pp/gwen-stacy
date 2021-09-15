@@ -3,6 +3,7 @@ from src.modules_manager import PatriotModule, loadModuleFromYaml
 from typing import List, Dict, Tuple
 import os, yaml
 
+
 # A repository is a collection of modules
 class Repository:
     repo_data_file = "repo_data.yaml"
