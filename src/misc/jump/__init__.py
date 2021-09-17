@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
     this library is used to jump to different checkpoints(which are just directories) definded
     by the user. it will have the following cli commands:
     
-    add_checkpoint <name> <?path>:
+    add_chk <name> <?path>:
     
         add a new checkpoint named <name> pointing to <path>. if <path> is not specified, 
         current directory is assumed.
@@ -14,11 +14,11 @@ from subprocess import Popen, PIPE
     
         jump to the checkpoint named <name>. if not exists, it will notify the user and do nothing.
         
-    list_checkpoints:
+    list_chk:
     
         list all checkpoints.
     
-    remove_checkpoint <name>:
+    rm_chk <name>:
     
     
     Side note, this commands are not meant to be assigned to a group since they belong to the
@@ -82,3 +82,21 @@ def listCheckpoints(context):
         
     for checkpoint in checkpoints:
         click.secho(f"{checkpoint} -> {checkpoints[checkpoint]}", fg='green')
+
+@click.command('rm_chk')
+@click.argument('name')
+@click.pass_context
+def removeCheckpoint(context, name):
+    """
+     remove a checkpoint by name
+    """
+    checkpoint_dir = os.path.join(context.obj['paths']["checkpoints"], "checkpoints.json")
+    
+    with open(checkpoint_dir, 'r') as f:
+        checkpoints = json.load(f)
+        
+    if name in checkpoints:
+        del checkpoints[name]
+        
+    with open(checkpoint_dir, 'w') as f:
+        json.dump(checkpoints, f)

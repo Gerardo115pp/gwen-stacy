@@ -1,4 +1,4 @@
-from .misc.jump import jumpToCheckpoint, addCheckpoint, listCheckpoints
+from .misc.jump import jumpToCheckpoint, addCheckpoint, listCheckpoints, removeCheckpoint
 from .configuration_manager import app_data
 from .configuration_manager.config import config
 from .configuration_manager.installer.installer import verifyInstallation
@@ -34,3 +34,4 @@ cli.add_command(templates)
 cli.add_command(jumpToCheckpoint)
 cli.add_command(addCheckpoint)
 cli.add_command(listCheckpoints)
+cli.add_command(removeCheckpoint)
