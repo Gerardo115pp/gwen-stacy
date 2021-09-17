@@ -5,7 +5,7 @@ import click, os
 @click.group()
 @click.pass_context
 def repos(context):
-    context.obj["repos"] = getRepositorys(context.obj["config"]["libs"])
+    context.obj["repos"] = getRepositorys(context.obj["paths"]["libs"])
     pass
 
 # Create a repository function, ask for the name of the repository and promt for the description. it creates a new repository with a repo_description.yaml inside the repository.
@@ -13,7 +13,7 @@ def repos(context):
 @click.argument("name", type=str, nargs=1)
 @click.pass_context
 def createRepo(context, name):
-    new_repo = Repository(os.path.join(context.obj["config"]["libs"], name))
+    new_repo = Repository(os.path.join(context.obj["paths"]["libs"], name))
     
     description = click.prompt("repo description", show_choices=False, show_default=False, type=str)
     new_repo.description = description

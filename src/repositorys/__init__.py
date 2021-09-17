@@ -1,4 +1,4 @@
-from src.configuration_manager.default_config import PATRIOTS_LINKER_SRC
+from src.configuration_manager import PATRIOTS_LINKER_SRC
 from src.modules_manager import PatriotModule, loadModuleFromYaml
 from typing import List, Dict, Tuple
 import os, yaml

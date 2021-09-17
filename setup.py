@@ -1,7 +1,9 @@
 from setuptools import setup, find_packages
 
+
+
 setup( 
-    name="patriot-linker",  
+    name="gwen-stacy",
     version="0.2",
     author="LiberyLab",
     author_email="contacto@liberylabs.com",

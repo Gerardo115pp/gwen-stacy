@@ -9,7 +9,7 @@ def modules(context):
     """
     Manage modules
     """
-    context.obj["repos"] = getRepositorys(context.obj["config"]['libs'])
+    context.obj["repos"] = getRepositorys(context.obj["paths"]['libs'])
 
 @modules.command("load")
 @click.option("-m","--module", help="Module to load", required=False)

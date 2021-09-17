@@ -1,6 +1,7 @@
-from .default_config import *
 from typing import Dict, List
+from . import *
 import click, yaml
+import os
 
 @click.group()
 def config():

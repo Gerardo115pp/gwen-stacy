@@ -78,8 +78,6 @@ def update(context, template):
     else:
         click.secho("Aborted", fg="red")
 
-@templates.command("list")
-@click.pass_context
 
 @templates.command("list")
 @click.pass_context

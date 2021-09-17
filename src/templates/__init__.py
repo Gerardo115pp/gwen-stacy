@@ -1,5 +1,5 @@
 from typing import List, Dict, Union, final
-from src.configuration_manager.default_config import TEMPLATES_DIR
+from src.configuration_manager import TEMPLATES_DIR
 from shutil import rmtree
 import json, os
 
@@ -37,8 +37,6 @@ import json, os
     the method getTemplate is used to get a template by name. the name must exist in the TEMPLATES_DIR.
         
 '''
-if not os.path.exists(TEMPLATES_DIR):
-    os.mkdir(TEMPLATES_DIR)
 
 
 class Template:
@@ -217,7 +215,6 @@ def getTemplates() -> List[Template]:
         new_template = Template(template.name)
         assert new_template.IsCreated, f'Template {template} is not created, this is most likly a logic error'
         templates.append(new_template)
-        
     return templates
     
 def getTemplate(template_name:str) -> Template:
