@@ -67,7 +67,7 @@ class PatriotModule:
             dependant_file_content = {'dependants': [dependant]}
         else:
             with open(f'{self.base_dir}/{PatriotModule.DEPENDANTS_FILE}', 'r') as f:
-                dependant_file_content = yaml.load(f)
+                dependant_file_content = yaml.load(f, Loader=yaml.FullLoader)
                 
             # check if dependant is already in dependants file
             if dependant not in dependant_file_content['dependants']:
