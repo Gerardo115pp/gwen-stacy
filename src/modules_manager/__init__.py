@@ -33,7 +33,7 @@ class PatriotModule:
             raise ValueError('base_dir not set')
         
         if not files:
-            files = [f.name for f in os.scandir(self.base_dir) if f.is_file() and f.name != PatriotModule.MOD_DATA_FILE]
+            files = [f.name for f in os.scandir(self.base_dir) if f.is_file() and not f.name.startswith('.')]
 
         for f in files:
             os.symlink(f'{self.base_dir}/{f}', f'{os.getcwd()}/{f}')
