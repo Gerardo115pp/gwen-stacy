@@ -1,3 +1,4 @@
+from src.modules_manager import PatriotModule
 from src.repositorys import Repository
 from src.repositorys.repositorys import getRepositorys
 from typing import List, Dict
@@ -73,4 +74,22 @@ def listModules(context:click.Context, repo:str, long:bool):
         for repo in context.obj["repos"].values():
             repo:Repository
             repo.display(long)
-            
+
+
+@modules.command("update")
+@click.argument("repo", nargs=1, required=True)
+@click.argument("module", nargs=1, required=True)
+@click.argument("files_list", nargs=-1, required=True, expose_value=True)
+@click.pass_context
+def updateModule(context:click.Context, repo, module, files_list):
+    """
+    Update module
+    """
+    if repo in context.obj["repos"]:
+        repository = context.obj["repos"][repo]
+        if repository.hasModule(module):
+            module_to_update:PatriotModule = repository.getModule(module)
+            module_to_update.update(files_list)
+            click.secho("Module updated", fg="green")
+    else:
+        click.secho("Repository not found", fg="red")

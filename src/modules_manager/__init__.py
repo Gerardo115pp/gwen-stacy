@@ -36,8 +36,9 @@ class PatriotModule:
             files = [f.name for f in os.scandir(self.base_dir) if f.is_file() and not f.name.startswith('.')]
 
         for f in files:
-            os.symlink(f'{self.base_dir}/{f}', f'{os.getcwd()}/{f}')
-            print(f'linked {f}')
+            if not os.path.exists(f'{os.getcwd()}/{f}'):
+                os.symlink(f'{self.base_dir}/{f}', f'{os.getcwd()}/{f}')
+                print(f'linked {f}')
         
         # DEPENDANTS UPDATE: add current working directory to dependants file
         self.updateDependants(os.getcwd())
@@ -48,6 +49,34 @@ class PatriotModule:
             raise ValueError(f'module name {self.name} is not the same as directory basenmae: {os.path.basename(base_dir)}')
         
         self.base_dir = base_dir
+
+    def update(self, files:List[str]) -> None:
+        '''
+            updates the files in the module. if no file list is given, it will do nothing. if base_dir is not set, it will print an error.
+        '''
+        if self.base_dir is None:
+            print('Error: base_dir not set')
+            return
+        
+        for f in files:
+            if f in self.files:
+                print(f'{f} already exists in module {self.name}') # we dont copy the file because its likely to be a symlink
+                continue
+            
+            print(f'updating {f}')
+            os.rename(f'{f}', f'{self.base_dir}/{f}')
+            os.symlink(f'{self.base_dir}/{f}', f'{os.getcwd()}/{f}')
+        
+        self.files = list(set(self.files).union(set(files)))
+        self.updateModFile()
+        
+    def updateModFile(self) -> None:
+        '''
+            updates the mod file with the current files in the module.
+        '''
+        with open(f'{self.base_dir}/{PatriotModule.MOD_DATA_FILE}', 'w') as f:
+            yaml.dump({'name': self.name, 'description': self.description, 'files': list(self.files)}, f)
+        print(f'updated mod file')
 
     def updateDependants(self, dependant:str) -> None:
         """
