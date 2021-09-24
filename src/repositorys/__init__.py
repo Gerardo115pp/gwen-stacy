@@ -1,5 +1,5 @@
-from src.configuration_manager import PATRIOTS_LINKER_SRC
 from src.modules_manager import PatriotModule, loadModuleFromYaml
+from src.configuration_manager import app_data
 from typing import List, Dict, Tuple
 import os, yaml
 
@@ -131,7 +131,28 @@ class Repository:
         
         with open(self.DataFile, "w") as f:
             yaml.dump(data_file, f)
+
+# gets a module from "repo>module" string
+def parseRepoModuleString(repo_module:str) -> Tuple[Repository, PatriotModule]:
+    '''
+        parses a repo module string into a tuple of (repo, module)
+    '''
+    assert repo_module.count(">") == 1, "Invalid repo module string"
+    repo, module = repo_module.split(">")
     
+    if repo not in app_data["repos"]:
+        print(f"Repository '{repo}' does not exist")
+        return None, None
+
+    target_repo:Repository = app_data["repos"][repo]
+    
+    if not target_repo.hasModule(module):
+        print(f"Module '{module}' does not exist in repository '{repo}'")
+        return None, None
+    
+    return target_repo, target_repo.getModule(module)
+    
+
 # recives a path for the repository base dire and returns a list of all the repositorys found
 def getRepositorys(repository_path: str) -> Dict[str,Repository]:
     repositorys = {}

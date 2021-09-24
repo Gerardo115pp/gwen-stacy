@@ -1,6 +1,7 @@
 
 from typing import Dict, Tuple, List
 import yaml, os
+from pathlib import Path
 
 
 '''
@@ -15,8 +16,12 @@ class PatriotModule:
         self.name:str = name
         self.description:str = description
         self.files:Tuple[str] = files
+        self.dependencys:List[str] = []
         self.base_dir:str = None # directory to the module
     
+    def addDependency(self, dependency_abspath) -> None:
+        self.dependencys.append(dependency_abspath)
+        
     def generateYaml(self) -> None:
         if not (self.base_dir is None):
             with open(f"{self.base_dir}/{PatriotModule.MOD_DATA_FILE}", 'w') as f:
@@ -39,6 +44,21 @@ class PatriotModule:
             if not os.path.exists(f'{os.getcwd()}/{f}'):
                 os.symlink(f'{self.base_dir}/{f}', f'{os.getcwd()}/{f}')
                 print(f'linked {f}')
+                
+        # check if the module has dependencys
+        if len(self.dependencys) > 0:
+            for d in self.dependencys:
+                if os.path.exists(os.path.join(d, PatriotModule.MOD_DATA_FILE)):
+                    dependency_module_path = Path(d)
+                    print(f'linking dependency {dependency_module_path.name}')
+                    dependency_module = loadModuleFromYaml(dependency_module_path.name, dependency_module_path.parent)
+                    dependency_module.link(dependency_module.files)
+                else:
+                    # dependency module does not exist
+                    raise ValueError(f'Dependency module {d} does not exist')
+                
+                    
+        
         
         # DEPENDANTS UPDATE: add current working directory to dependants file
         self.updateDependants(os.getcwd())
@@ -75,7 +95,12 @@ class PatriotModule:
             updates the mod file with the current files in the module.
         '''
         with open(f'{self.base_dir}/{PatriotModule.MOD_DATA_FILE}', 'w') as f:
-            yaml.dump({'name': self.name, 'description': self.description, 'files': list(self.files)}, f)
+            yaml.dump({
+                'name': self.name,
+                'description': self.description,
+                'files': list(self.files),
+                'dependencys': self.dependencys
+                }, f)
         print(f'updated mod file')
 
     def updateDependants(self, dependant:str) -> None:
@@ -108,9 +133,8 @@ class PatriotModule:
         with open(f'{self.base_dir}/{PatriotModule.DEPENDANTS_FILE}', 'w') as f:
             yaml.dump(dependant_file_content, f)
         print(f'updated dependants file')
-        
+    
 
-        
 def loadModuleFromYaml(mod:str, repo_path:str) -> PatriotModule:
     module_yaml_path = f"{repo_path}/{mod}/{PatriotModule.MOD_DATA_FILE}"
     if os.path.exists(module_yaml_path):
@@ -118,5 +142,9 @@ def loadModuleFromYaml(mod:str, repo_path:str) -> PatriotModule:
             module_yaml = yaml.load(f, Loader=yaml.FullLoader)
         module = PatriotModule(module_yaml['name'], module_yaml['description'], tuple(module_yaml['files']))
         module.setBaseDir(os.path.join(repo_path, mod))
+        
+        # check if dependencys exist, in older versions of gwen the dependencys were not saved in the mod file
+        if 'dependencys' in module_yaml:
+            module.dependencys = module_yaml['dependencys']
         return module
     

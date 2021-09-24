@@ -1,5 +1,5 @@
 from src.modules_manager import PatriotModule
-from src.repositorys import Repository
+from src.repositorys import Repository, parseRepoModuleString
 from src.repositorys.repositorys import getRepositorys
 from typing import List, Dict
 import click, os, json
@@ -11,6 +11,66 @@ def modules(context):
     Manage modules
     """
     context.obj["repos"] = getRepositorys(context.obj["paths"]['libs'])
+
+
+@modules.command("add_dependency")
+@click.option("--module", "-t", help="Target module name", required=True)
+@click.option("--repo", "-t", help="Target module name", default="_", required=False)
+@click.argument("dependencys", nargs=-1)
+@click.pass_context
+def add_dependency(context, module, dependencys, repo):
+    """
+        Adds a module to the dependency list of a target module. if repo is
+        provided, it will   look for int only in that repository. if is not provided, it will
+        look for a module with the same name in all repositories and use the first one found.
+        by defual its assumed that the dependencys are in the same repository as the target module.
+        if this is not the case, you can provide the repo on the dependency name as follows:
+            
+            repo>dependency
+    """
+    
+    # if repo is not provided, it will look for a module with the same name in all repositories and use the first one found.
+    target_repo = None
+    if repo == "_":
+        click.secho(f"Searching for repo containing '{module}'", fg="yellow")
+        for r in context.obj["repos"].values():
+            if r.hasModule(module):
+                target_repo = r
+                break
+        
+        if target_repo:
+            click.secho(f"Found {module} on '{r.name}'", fg="green")
+            if not click.confirm(f"Do you want to add the dependency to '{module}' on '{r.name}'", default=False):
+                click.secho("Aborted", fg="red")
+                return
+        else:
+            click.secho(f"Could not find '{module}'", fg="red")
+            return
+    else:
+        if repo in context.obj["repos"]:
+            target_repo = context.obj["repos"][repo]
+
+    target_module:PatriotModule = r.getModule(module)
+    if not target_module:
+        click.secho(f"Could not find '{module}' on {target_repo.name}", fg="red")
+        return
+    
+    for d in dependencys:
+        if '>' not in d:
+            d = f"{target_repo.name}>{d}"
+        dependency:PatriotModule = parseRepoModuleString(d)[1]
+        target_module.addDependency(dependency.base_dir)
+    
+    target_module.updateModFile()
+    
+            
+
+
+@modules.command("remove_dependency")
+@click.option("--module", "-t", help="Target module name", required=True)
+@click.option("--repo", "-t", help="Target module name", required=False)
+@click.argument("dependency", nargs=-1)
+@click.pass_context
 
 @modules.command("load")
 @click.option("-m","--module", help="Module to load", required=False)
