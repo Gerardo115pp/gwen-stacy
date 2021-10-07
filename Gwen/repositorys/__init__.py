@@ -1,5 +1,5 @@
-from src.modules_manager import PatriotModule, loadModuleFromYaml
-from src.configuration_manager import app_data
+from Gwen.modules_manager import PatriotModule, loadModuleFromYaml
+from Gwen.configuration_manager import app_data
 from typing import List, Dict, Tuple
 import os, yaml
 

@@ -1,6 +1,6 @@
-from src.modules_manager import PatriotModule
-from src.repositorys import Repository, parseRepoModuleString
-from src.repositorys.repositorys import getRepositorys
+from Gwen.modules_manager import PatriotModule
+from Gwen.repositorys import Repository, parseRepoModuleString
+from Gwen.repositorys.repositorys import getRepositorys
 from typing import List, Dict
 import click, os, json
 

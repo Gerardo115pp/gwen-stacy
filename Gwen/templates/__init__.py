@@ -1,5 +1,5 @@
 from typing import List, Dict, Union, final
-from src.configuration_manager import TEMPLATES_DIR
+from Gwen.configuration_manager import TEMPLATES_DIR
 from shutil import rmtree
 import json, os
 
@@ -47,6 +47,7 @@ class Template:
         self.structure:Dict = self.loadStructure()
         self.files:List[str] = self.loadFiles() # a list with relative paths to files
         self.template_dir = os.path.join(TEMPLATES_DIR, self.name)
+        self.excludes = set() # a set with relative paths to files that should be excluded on walkCwd
     
     # creates the template
     def boil(self, overwrite:bool=False) -> None:
@@ -92,6 +93,7 @@ class Template:
         '''
             creates the structure of the template.
         '''
+
         for key, value in self.structure.items():
             if isinstance(value, dict):
                 print(f'creating directory {key}')
@@ -152,11 +154,14 @@ class Template:
                 files.append(file)
         return files
     
-    def scan(self) -> None:
+    def scan(self, excludes=None) -> None:
         '''
             scans the current working directory and stores the files in self.files and 
             directories in self.structure.
         '''
+        if excludes != None:
+            self.excludes = excludes
+        
         self.files = [] if self.files is None else self.files
         self.structure = {} if self.structure is None else self.structure
         
@@ -170,7 +175,7 @@ class Template:
         '''
         for node in os.scandir(cwd):
             node_path = node.path.replace("./", "")
-            if node.is_symlink():
+            if node.is_symlink() or node.name in self.excludes:
                 continue
             
             if node.is_dir():

@@ -1,8 +1,8 @@
-from src.configuration_manager import app_data
+from Gwen.configuration_manager import app_data
 import os, pathlib
 
 # load features install programs
-from src.misc.jump_install import install as jump_install
+from Gwen.misc.jump_install import install as jump_install
 
 
 
@@ -50,12 +50,12 @@ def run():
     # load tools
     addToDotRC()
     
-    gwen_path = app_data['paths']['src']
+    gwen_path = app_data['paths']['Gwen']
     
 
     
     # create ~/.gwen
-    if not os.path.exists(app_data['paths']['src']):
+    if not os.path.exists(app_data['paths']['Gwen']):
         os.mkdir(os.path.expanduser("~/.gwen"))
     
     os.chdir(gwen_path)

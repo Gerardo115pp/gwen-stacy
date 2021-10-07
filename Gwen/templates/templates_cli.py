@@ -1,4 +1,4 @@
-from click.core import Context
+from typing import List
 from . import Template, getTemplates, templateExists
 import click, os
 
@@ -13,17 +13,24 @@ def templates(context):
 @templates.command("use")
 @click.option("--name", "-n", type=str, default="", help="Name of the template to use")
 @click.option("-t", "--test", is_flag=True, default=False, help="Test the template")
+@click.option("-e", "--exclude", multiple=True, type=str, default=None, help="Exclude a file from the template")
 @click.pass_context
-def useCwdAsTemplate(context, name, test):
+def useCwdAsTemplate(context, name:str, test:bool, exclude:List[str]):
     """
     Use the current working directory as a template
     """
+    if exclude is None:
+        exclude = set()
+    else:
+        exclude = set(exclude)
+        
     if name == "":
         name = os.path.basename(os.getcwd())
     
+    
     new_template = Template(name)
     click.secho(f"Using {name} as template", fg="yellow")
-    new_template.scan()
+    new_template.scan(exclude) # walk the directory and add all files to the template, excluding the exclude set
     print("scanning done")
     click.secho(f"""
         structure: {new_template.structure}\n
